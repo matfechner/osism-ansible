@@ -104,6 +104,14 @@
         - Linux servers
       state: present
      delegate_to: localhost
+   - name: Import Zabbix templates from XML
+     zabbix_template:
+       server_url: "{{ zabbix_server_url }}"
+       login_user: "{{ zabbix_login_user }}"
+       login_password: "{{ zabbix_login_password }}"
+       template_json: "{{ lookup('file', '/ansible/library/scs_templates.xml') }}"
+       state: present
+     delegate_to: localhost
    - name: Create Hosts in Zabbix
      zabbix_host:
        server_url: "{{ zabbix_server_url }}"
@@ -122,17 +130,9 @@
            dns: "{{ item }}"
            port: "10050"
        link_templates:
-         - Template OS Linux by Zabbix agent
+         - SCS_Template OS Linux by Zabbix agent
      with_items:
        - "{{ groups['generic'] }}"
-     delegate_to: localhost
-   - name: Import Zabbix templates from XML
-     zabbix_template:
-       server_url: "{{ zabbix_server_url }}"
-       login_user: "{{ zabbix_login_user }}"
-       login_password: "{{ zabbix_login_password }}"
-       template_xml: "{{ lookup('file', 'library/zbx_export_scs_templates.xml') }}"
-       state: present
      delegate_to: localhost
    - name: Link templates to Ceph nodes
      zabbix_host:
